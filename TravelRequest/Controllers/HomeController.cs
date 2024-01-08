@@ -41,11 +41,6 @@ namespace TravelRequest.Controllers
             return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
         }
        
-        //public JsonResult TravelGetInfo_Read([DataSourceRequest] DataSourceRequest request)
-        //{
-        //    //TravelRepository travelRepository = new(_context);
-        //    //return(Json(travelRepository.GetAllTravelInformation().ToList().ToDataSourceResult(request)));
-        //    //// return Json(employeeRepository.GetAllEmployeesByEmpOrgPath(EmpOrgPath).ToList().ToDataSourceResult(request));
-        //}
+        
     }
 }

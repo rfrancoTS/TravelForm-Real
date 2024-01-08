@@ -4,6 +4,7 @@
 @addTagHelper *, Kendo.Mvc
 @addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
 @model TravelRequest.Models.TravelModel
+@using Kendo.Mvc
 
 @{
     ViewData["Title"] = "Index";
@@ -102,10 +103,24 @@
             </select>
         </div>
 
-        <div class="mb-3" id="travellingWithWhoSection" style="display: none;">
+        <div class="mb-3" id="travellingWithWhoSection">
             <label asp-for="TravellingWithWho" class="form-label"> Who Are You Traveling With?:</label>
             <input asp-for="TravellingWithWho" class="form-control" />
+
         </div>
+
+        @(Html.Kendo().AutoComplete()
+            .Name("Employees")
+            .Filter("startswith")
+            .Placeholder("Who")
+            .BindTo(new string[] {
+        "Ryan",
+        "Leena",
+        "Keith Richardson"
+            })
+            .Separator(", ")
+            .HtmlAttributes(new { style = "width: 100%;" })
+            )
 
         <div class="mb-3">
             <label asp-for="Budget" class="form-label"> What is the Budget?:</label>
@@ -166,13 +181,13 @@
     document.getElementById('checkInDate').addEventListener('change', calculateNights);
     document.getElementById('checkOutDate').addEventListener('change', calculateNights);
 
-    document.getElementById('travellingWithOthers').addEventListener('change', function () {
-        var travellingWithWhoSection = document.getElementById('travellingWithWhoSection');
-        travellingWithWhoSection.style.display = this.value === 'Yes' ? 'block' : 'none';
+    // document.getElementById('travellingWithOthers').addEventListener('change', function () {
+    //     var travellingWithWhoSection = document.getElementById('travellingWithWhoSection');
+    //     travellingWithWhoSection.style.display = this.value === 'Yes' ? 'block' : 'none';
 
-        if (this.value !== 'Yes') {
-            document.getElementById('TravellingWithWho').value = '';
-        }
-    });
+    //     if (this.value !== 'Yes') {
+    //         document.getElementById('TravellingWithWho').value = '';
+    //     }
+    // });
 
 </script>
