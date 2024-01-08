@@ -1,0 +1,12 @@
+{
+    "ConnectionStrings": {
+        "DefaultConnection": "Data Source=SQL8006.site4now.net;Initial Catalog=db_a9d1fc_leena;User Id=db_a9d1fc_leena_admin;Password=Trisource2023$$"
+    },
+    "Logging": {
+        "LogLevel": {
+            "Default": "Information",
+            "Microsoft.AspNetCore": "Warning"
+        }
+    },
+    "AllowedHosts": "*"
+}
