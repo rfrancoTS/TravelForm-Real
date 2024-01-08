@@ -1,0 +1,178 @@
+﻿@page
+@using Kendo.Mvc.UI
+@using Kendo.Mvc.Extensions
+@addTagHelper *, Kendo.Mvc
+@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
+@model TravelRequest.Models.TravelModel
+
+@{
+    ViewData["Title"] = "Index";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h1>Index</h1>
+
+<style>
+    .form-label {
+        font-weight: bolder;
+        display: flex;
+    }
+
+    .centered-content {
+        display: flex;
+    }
+
+</style>
+
+<div class="text-center" style="border:10px ">
+    <form asp-action="Create" asp-controller="Home" method="post">
+        <div>
+            <label asp-for="EmployeeEmail" class="form-label"> Employee Email:</label>
+            <input asp-for="EmployeeEmail" class="form-control" />
+        </div>
+
+        <div class="mb-3">
+            <label asp-for="Name" class="form-label">Your Name:</label>
+            <input asp-for="Name" class="form-control" />
+        </div>
+
+        <div class="mb-3">
+            <label asp-for="EmployeeId" class="form-label">Your ID:</label>
+            <input asp-for="EmployeeId" class="form-control" />
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label">Location You Are Traveling To?:</label>
+            <div style="text-align: left;">
+                <div>
+                    <input type="checkbox" id="mexico" name="TravelLocation" value="Mexico">
+                    <label for="mexico">Mexico</label>
+                </div>
+                <div>
+                    <input type="checkbox" id="nicaragua" name="TravelLocation" value="Nicaragua">
+                    <label for="nicaragua">Nicaragua</label>
+                </div>
+                <div>
+                    <input type="checkbox" id="california" name="TravelLocation" value="California">
+                    <label for="california">California</label>
+                </div>
+                <div>
+                    <input type="checkbox" id="other" name="TravelLocation" value="Other">
+                    <label for="other">Other:</label>
+                    <input type="text" id="otherText" name="OtherLocation" disabled style="display: inline-block; width: auto;" />
+                </div>
+            </div>
+        </div>
+        <script>
+            document.getElementById('other').addEventListener('change', function () {
+                var otherText = document.getElementById('otherText');
+                otherText.disabled = !this.checked;
+                if (!this.checked) {
+                    otherText.value = '';
+                }
+            });
+        </script>
+
+        <div>
+            <div class="centered-content" style="align-items: flex-start;">
+                <div class="mb-3" style="margin-right: 10px;">
+                    <label asp-for="CheckInDate" class="form-label">Check In Date:</label>
+                    <input id="checkInDate" asp-for="CheckInDate" type="date" class="form-control" required />
+                </div>
+
+                <div class="mb-3">
+                    <label asp-for="CheckOutDate" class="form-label">Check Out Date:</label>
+                    <input id="checkOutDate" asp-for="CheckOutDate" type="date" class="form-control" required />
+                </div>
+
+
+                <div style="position:relative; left:1%;">
+                    <label asp-for="NumberOfNights" class="form-label">Number Of Nights You Are Staying:</label>
+                    <input id="numberOfNights" asp-for="NumberOfNights" class="form-control" type="text" readonly />
+                </div>
+            </div>
+        </div>
+
+        <div class="mb-3">
+            <label asp-for="TravellingWithOthers" class="form-label"> Are You Traveling With Others?:</label>
+            <select asp-for="TravellingWithOthers" class="form-control" required id="travellingWithOthers">
+                <option value="" disabled selected>Select an option</option>
+                <option value="Yes">Yes</option>
+                <option value="No">No</option>
+            </select>
+        </div>
+
+        <div class="mb-3" id="travellingWithWhoSection" style="display: none;">
+            <label asp-for="TravellingWithWho" class="form-label"> Who Are You Traveling With?:</label>
+            <input asp-for="TravellingWithWho" class="form-control" />
+        </div>
+
+        <div class="mb-3">
+            <label asp-for="Budget" class="form-label"> What is the Budget?:</label>
+            <input asp-for="Budget" class="form-control" />
+        </div>
+
+        <div class="mb-3">
+            <label asp-for="ReasonForTravel" class="form-label"> Reason For Travel?:</label>
+            <input asp-for="ReasonForTravel" class="form-control" />
+        </div>
+
+        <div class="mb-3">
+            <label asp-for="WhichCampaign" class="form-label"> Which Campaign Are You A Part Of?:</label>
+            <input asp-for="WhichCampaign" class="form-control" />
+        </div>
+
+        <div class="mb-3">
+            <label asp-for="ApprovedByWho" class="form-label"> Who Has Approved This?:</label>
+            <input asp-for="ApprovedByWho" class="form-control" />
+        </div>
+
+        <div>
+            <label asp-for="RentalCar" class="form-label"> Is A Rental Car Needed?:</label>
+            <select asp-for="RentalCar" class="form-control" required>
+                <option value="" disabled selected>Select an option</option>
+                <option value="Yes">Yes</option>
+                <option value="No">No</option>
+            </select>
+        </div>
+        <button type="submit" class="btn btn-primary">Submit</button>
+    </form>
+</div>
+
+<script>
+    function onChange() {
+        var dateRangePicker = $("#reservations").data("kendoDateRangePicker");
+
+        System.Diagnostics.Debug.WriteLine("HI");
+    }
+
+    document.getElementById('checkInDate').addEventListener('change', function () {
+        document.getElementById('checkOutDate').min = this.value;
+    });
+
+    function calculateNights() {
+        var checkInDate = new Date(document.getElementById('checkInDate').value);
+        var checkOutDate = new Date(document.getElementById('checkOutDate').value);
+        if (checkOutDate <= checkInDate) {
+            document.getElementById('checkOutDate').value = '';
+            document.getElementById('numberOfNights').value = '';
+            return;
+        }
+        var timeDiff = Math.abs(checkOutDate - checkInDate);
+        var diffDays = Math.ceil(timeDiff / (1000 * 3600 * 24));
+        document.getElementById('numberOfNights').value = diffDays || '';
+    }
+
+    document.getElementById('checkInDate').addEventListener('change', calculateNights);
+    document.getElementById('checkOutDate').addEventListener('change', calculateNights);
+
+    document.getElementById('travellingWithOthers').addEventListener('change', function () {
+        var travellingWithWhoSection = document.getElementById('travellingWithWhoSection');
+        travellingWithWhoSection.style.display = this.value === 'Yes' ? 'block' : 'none';
+
+        if (this.value !== 'Yes') {
+            document.getElementById('TravellingWithWho').value = '';
+        }
+    });
+
+</script>
