@@ -4,14 +4,16 @@
 @addTagHelper *, Kendo.Mvc
 @addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
 @model TravelRequest.Models.TravelModel
-@using Kendo.Mvc
+
+@inject Microsoft.AspNetCore.Antiforgery.IAntiforgery Xsrf
+
+
 
 @{
     ViewData["Title"] = "Index";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-<h1>Index</h1>
 
 <style>
     .form-label {
@@ -24,6 +26,8 @@
     }
 
 </style>
+
+
 
 <div class="text-center" style="border:10px ">
     <form asp-action="Create" asp-controller="Home" method="post">
@@ -43,36 +47,10 @@
         </div>
 
         <div class="mb-3">
-            <label class="form-label">Location You Are Traveling To?:</label>
-            <div style="text-align: left;">
-                <div>
-                    <input type="checkbox" id="mexico" name="TravelLocation" value="Mexico">
-                    <label for="mexico">Mexico</label>
-                </div>
-                <div>
-                    <input type="checkbox" id="nicaragua" name="TravelLocation" value="Nicaragua">
-                    <label for="nicaragua">Nicaragua</label>
-                </div>
-                <div>
-                    <input type="checkbox" id="california" name="TravelLocation" value="California">
-                    <label for="california">California</label>
-                </div>
-                <div>
-                    <input type="checkbox" id="other" name="TravelLocation" value="Other">
-                    <label for="other">Other:</label>
-                    <input type="text" id="otherText" name="OtherLocation" disabled style="display: inline-block; width: auto;" />
-                </div>
-            </div>
+            <label class="form-label">Location You Are Traveling To?</label>
+            <input id="dropdowntree" style="width: 100%;" />
         </div>
-        <script>
-            document.getElementById('other').addEventListener('change', function () {
-                var otherText = document.getElementById('otherText');
-                otherText.disabled = !this.checked;
-                if (!this.checked) {
-                    otherText.value = '';
-                }
-            });
-        </script>
+
 
         <div>
             <div class="centered-content" style="align-items: flex-start;">
@@ -103,24 +81,28 @@
             </select>
         </div>
 
-        <div class="mb-3" id="travellingWithWhoSection">
+        <div class="mb-3" id="travellingWithWhoSection" style="display:none">
             <label asp-for="TravellingWithWho" class="form-label"> Who Are You Traveling With?:</label>
-            <input asp-for="TravellingWithWho" class="form-control" />
+            @(Html.Kendo().AutoComplete()
+                .Name("TravelNames")
+                .Filter("startswith")
+                .Placeholder("Who?")
+                .Size(ComponentSize.Medium)
+                .Rounded(Rounded.Medium)
+                .FillMode(FillMode.Outline)
+                .Filter("startswith")
+                .BindTo(new string[] {
+            "Keith Richardson",
+            "Joel Delpay",
+            "Shane Edwards",
+                })
+                .Separator(", ")
+                .HtmlAttributes(new { style = "width: 100%;" })
+                )
 
         </div>
 
-        @(Html.Kendo().AutoComplete()
-            .Name("Employees")
-            .Filter("startswith")
-            .Placeholder("Who")
-            .BindTo(new string[] {
-        "Ryan",
-        "Leena",
-        "Keith Richardson"
-            })
-            .Separator(", ")
-            .HtmlAttributes(new { style = "width: 100%;" })
-            )
+
 
         <div class="mb-3">
             <label asp-for="Budget" class="form-label"> What is the Budget?:</label>
@@ -138,8 +120,23 @@
         </div>
 
         <div class="mb-3">
-            <label asp-for="ApprovedByWho" class="form-label"> Who Has Approved This?:</label>
-            <input asp-for="ApprovedByWho" class="form-control" />
+            <label asp-for="ApprovedByWho" class="form-label"> Who Has Approved This?</label>
+            @(Html.Kendo().AutoComplete()
+                .Name("ApprovedNames")
+                .Filter("startswith")
+                .Placeholder("Who?")
+                .Size(ComponentSize.Medium)
+                .Rounded(Rounded.Medium)
+                .FillMode(FillMode.Outline)
+                .Filter("startswith")
+                .BindTo(new string[] {
+            "TEST NAME1",
+            "Name Test 2",
+            "TestName3",
+                })
+                .Separator(", ")
+                .HtmlAttributes(new { style = "width: 100%;" })
+                )
         </div>
 
         <div>
@@ -155,11 +152,42 @@
 </div>
 
 <script>
-    function onChange() {
-        var dateRangePicker = $("#reservations").data("kendoDateRangePicker");
+    $(document).ready(function () {
 
-        System.Diagnostics.Debug.WriteLine("HI");
-    }
+        // create kendoDropDownTree from input HTML element
+        $("#dropdowntree").kendoDropDownTree({
+            placeholder: "Select ...",
+            height: "auto",
+            dataSource: [
+                {
+                    text: "Mexico", expanded: true, items: [
+                        { text: "Mexicali" },
+                        { text: "Tijuana" },
+                    ]
+                },
+                {
+                    text: "Nicaraqua", items: [
+                        { text: "Managua" },
+                    ]
+                },
+                {
+                    text: "USA", items: [
+                        { text: "Valancia" }
+                    ]
+                }
+            ]
+        });
+
+        var dropdowntree = $("#dropdowntree").data("kendoDropDownTree");
+        var treeviewSelect = function (e) {
+            if (e.sender.dataItem(e.node).hasChildren) {
+                e.preventDefault()
+            }
+        };
+
+        dropdowntree.treeview.bind("select", treeviewSelect);
+
+    });
 
     document.getElementById('checkInDate').addEventListener('change', function () {
         document.getElementById('checkOutDate').min = this.value;
@@ -181,13 +209,13 @@
     document.getElementById('checkInDate').addEventListener('change', calculateNights);
     document.getElementById('checkOutDate').addEventListener('change', calculateNights);
 
-    // document.getElementById('travellingWithOthers').addEventListener('change', function () {
-    //     var travellingWithWhoSection = document.getElementById('travellingWithWhoSection');
-    //     travellingWithWhoSection.style.display = this.value === 'Yes' ? 'block' : 'none';
+    document.getElementById('travellingWithOthers').addEventListener('change', function () {
+        var travellingWithWhoSection = document.getElementById('travellingWithWhoSection');
+        travellingWithWhoSection.style.display = this.value === 'Yes' ? 'block' : 'none';
 
-    //     if (this.value !== 'Yes') {
-    //         document.getElementById('TravellingWithWho').value = '';
-    //     }
-    // });
+        if (this.value !== 'Yes') {
+            document.getElementById('TravellingWithWho').value = '';
+        }
+    });
 
 </script>
