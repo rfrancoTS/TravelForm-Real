@@ -2,6 +2,6 @@
 {
     public interface ITravelRepository
     {
-        public ICollection<TravelModel> GetAllTravelInformation();
+        public ICollection<TsiTravelModel> GetAllTravelInformation();
     }
 }

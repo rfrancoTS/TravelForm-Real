@@ -22,14 +22,14 @@ namespace TravelRequest.Pages.Home
             _context = context;
         }
 
-        public IList<TravelModel> TravelModels { get; set; } = default!;
+        public IList<TsiTravelModel> TravelModels { get; set; } = default!;
 
         public async Task OnGetAsync()
         {
-            TravelModels = await _context.TravelModels.ToListAsync();
+            TravelModels = await _context.TsiTravelModels.ToListAsync();
         }
 
-        public async Task<IActionResult> OnPostUpdate(TravelModel travelModel)
+        public async Task<IActionResult> OnPostUpdate(TsiTravelModel travelModel)
         {
             if (!ModelState.IsValid)
             {
@@ -59,7 +59,7 @@ namespace TravelRequest.Pages.Home
 
         private bool TravelModelExists(int id)
         {
-            return _context.TravelModels.Any(e => e.Id == id);
+            return _context.TsiTravelModels.Any(e => e.Id == id);
         }
 
         public async Task<IActionResult> OnPostDelete(int? id)
@@ -69,25 +69,25 @@ namespace TravelRequest.Pages.Home
                 return NotFound();
             }
 
-            var travelModel = await _context.TravelModels.FindAsync(id);
+            var travelModel = await _context.TsiTravelModels.FindAsync(id);
 
             if (travelModel != null)
             {
-                _context.TravelModels.Remove(travelModel);
+                _context.TsiTravelModels.Remove(travelModel);
                 await _context.SaveChangesAsync();
             }
 
             return RedirectToPage("./Index");
         }
 
-        public async Task<IActionResult> OnPostCreate(TravelModel travelModel)
+        public async Task<IActionResult> OnPostCreate(TsiTravelModel travelModel)
         {
             if (!ModelState.IsValid)
             {
                 return Page();
             }
 
-            _context.TravelModels.Add(travelModel);
+            _context.TsiTravelModels.Add(travelModel);
 
             try
             {
@@ -103,8 +103,8 @@ namespace TravelRequest.Pages.Home
 
         public async Task<ActionResult> OnPostRead([DataSourceRequest] DataSourceRequest request)
         {
-            var travelModels = await _context.TravelModels.ToListAsync();
-            return new JsonResult(travelModels.ToDataSourceResult(request));
+            var TsiTravelModels = await _context.TsiTravelModels.ToListAsync();
+            return new JsonResult(TsiTravelModels.ToDataSourceResult(request));
         }
     }
 }

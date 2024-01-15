@@ -1,15 +1,15 @@
-﻿namespace TravelRequest.Models
+﻿using System.ComponentModel.DataAnnotations;
+
+namespace TravelRequest.Models
 {
-    public class TravelModel
+    public class TsiTravelModel
     {
 
-       
-        public int Id { get; set; }
+         public int Id { get; set; }
         public Guid? Uid { get; set; }
         public string? EmployeeEmail { get; set; }
         public string? Name { get; set; }
-        public int? EmployeeId { get; set; }
-            
+        public int? EmployeeId { get; set; }           
 
         //this should become a List<> when the parameter is set.
         public List<string>? TravelLocation { get; set; }

@@ -11,7 +11,7 @@ namespace TravelRequest.Data
             : base(options)
         {
         }
-        public DbSet<TravelModel> TravelModels { get; set; }
+     public DbSet<TsiTravelModel> TsiTravelModels { get; set; }
 
     }
 }

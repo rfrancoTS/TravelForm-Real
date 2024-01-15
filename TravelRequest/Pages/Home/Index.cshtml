@@ -3,7 +3,7 @@
 @using Kendo.Mvc.Extensions
 @addTagHelper *, Kendo.Mvc
 @addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
-@model TravelRequest.Models.TravelModel
+@model TravelRequest.Models.TsiTravelModel
 
 @inject Microsoft.AspNetCore.Antiforgery.IAntiforgery Xsrf
 
@@ -13,6 +13,8 @@
     ViewData["Title"] = "Index";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
+
+
 
 
 <style>
@@ -25,133 +27,148 @@
         display: flex;
     }
 
+    .border{    
+        border:2px solid #000;
+        padding: 1%;
+        border-radius: 10px;
+        margin-bottom: 2%;
+    }
+
 </style>
 
 
 
-<div class="text-center" style="border:10px ">
-    <form asp-action="Create" asp-controller="Home" method="post">
-        <div>
-            <label asp-for="EmployeeEmail" class="form-label"> Employee Email:</label>
-            <input asp-for="EmployeeEmail" class="form-control" />
-        </div>
+<body>
+    <form asp-action="Create" asp-controller="Home" method="post" id="myForm">
 
-        <div class="mb-3">
-            <label asp-for="Name" class="form-label">Your Name:</label>
-            <input asp-for="Name" class="form-control" />
-        </div>
+       
+        <label style=" font-weight: bolder;">Destinations You Are Traveling To?</label>
+        <br/>
+        <input id="dropdowntree" style="width: 20%;" />
+        
+        <br/>
+        <br/>
 
-        <div class="mb-3">
-            <label asp-for="EmployeeId" class="form-label">Your ID:</label>
-            <input asp-for="EmployeeId" class="form-control" />
-        </div>
+       
+		<label for="quantity" style=" font-weight: bolder;" class="form-label">How many people are traveling?</label>
+        <input type="number" id="quantity" name="quantity" min="1" style="width:20%;">
+        
+        
+        <br />
+        <br />
 
-        <div class="mb-3">
-            <label class="form-label">Location You Are Traveling To?</label>
-            <input id="dropdowntree" style="width: 100%;" />
-        </div>
+        <div style="display:none" id="RestOfForm">
 
+            <!--This is used as the template for the Emails,Name,and Id, or ENI for short.-->
+            <div class = "border" id= "ENI_Template" style = "display:none;">
+				<h3 id ="EmployeeNum"></h3>
+                <div class="centered-content" style="align-items: flex-start;">
+					
+                    <div style="margin-right:1%;">
+						<label asp-for="Name" class="form-label">Full Name:</label>
+						<input asp-for="Name" class="form-control" />
+					</div>
 
-        <div>
-            <div class="centered-content" style="align-items: flex-start;">
-                <div class="mb-3" style="margin-right: 10px;">
-                    <label asp-for="CheckInDate" class="form-label">Check In Date:</label>
-                    <input id="checkInDate" asp-for="CheckInDate" type="date" class="form-control" required />
+                    <div>
+                        <label asp-for="EmployeeEmail" class="form-label" required> Employee Email:</label>
+                        <input asp-for="EmployeeEmail" name="EmployeeEmail" id="EmployeeEmail" class="form-control" />
+                    </div>
+
+                    <div style="position:relative; left:1%;">
+                        <label asp-for="EmployeeId" class="form-label" style="position:relative; left:1%;">Employee ID:</label>
+                        <input asp-for="EmployeeId" class="form-control" />
+                    </div>
+
                 </div>
 
-                <div class="mb-3">
-                    <label asp-for="CheckOutDate" class="form-label">Check Out Date:</label>
-                    <input id="checkOutDate" asp-for="CheckOutDate" type="date" class="form-control" required />
-                </div>
+                <!--This is for the check in, check-out, and # of nights you are staying-->
+                <div>
+                    <div class="centered-content" style="align-items: flex-start;">
+                        <div style="margin-right: 10px;">
+                            <label asp-for="CheckInDate" class="form-label">Check In Date:</label>
+                            <input id="checkInDate" name="checkInDate" asp-for="CheckInDate" type="date" class="form-control"  />
+                        </div>
+
+                        <div>
+                            <label asp-for="CheckOutDate" class="form-label">Check Out Date:</label>
+                            <input id="checkOutDate" name="checkOutDate" asp-for="CheckOutDate" type="date" class="form-control" />
+                        </div>
 
 
-                <div style="position:relative; left:1%;">
-                    <label asp-for="NumberOfNights" class="form-label">Number Of Nights You Are Staying:</label>
-                    <input id="numberOfNights" asp-for="NumberOfNights" class="form-control" type="text" readonly />
+                        <div style="position:relative; left:1%;">
+                            <label asp-for="NumberOfNights" class="form-label">Number Of Nights You Are Staying:</label>
+                            <input id="numberOfNights" name="numberOfNights" asp-for="NumberOfNights" class="form-control" type="text" readonly />
+                        </div>
+                    </div>
                 </div>
+               
             </div>
-        </div>
-
-        <div class="mb-3">
-            <label asp-for="TravellingWithOthers" class="form-label"> Are You Traveling With Others?:</label>
-            <select asp-for="TravellingWithOthers" class="form-control" required id="travellingWithOthers">
-                <option value="" disabled selected>Select an option</option>
-                <option value="Yes">Yes</option>
-                <option value="No">No</option>
-            </select>
-        </div>
-
-        <div class="mb-3" id="travellingWithWhoSection" style="display:none">
-            <label asp-for="TravellingWithWho" class="form-label"> Who Are You Traveling With?:</label>
-            @(Html.Kendo().AutoComplete()
-                .Name("TravelNames")
-                .Filter("startswith")
-                .Placeholder("Who?")
-                .Size(ComponentSize.Medium)
-                .Rounded(Rounded.Medium)
-                .FillMode(FillMode.Outline)
-                .Filter("startswith")
-                .BindTo(new string[] {
-            "Keith Richardson",
-            "Joel Delpay",
-            "Shane Edwards",
-                })
-                .Separator(", ")
-                .HtmlAttributes(new { style = "width: 100%;" })
-                )
-
-        </div>
 
 
+            <!--This is where the cloned NEIs go to-->
+            <div id = "ENI_Location"> </div>
 
-        <div class="mb-3">
-            <label asp-for="Budget" class="form-label"> What is the Budget?:</label>
-            <input asp-for="Budget" class="form-control" />
-        </div>
 
-        <div class="mb-3">
-            <label asp-for="ReasonForTravel" class="form-label"> Reason For Travel?:</label>
-            <input asp-for="ReasonForTravel" class="form-control" />
-        </div>
+            <!--Rest of the form, questions for ENTIRE group-->
+            <section class="border">
+                <div>
+                    <label asp-for="Budget" class="form-label"> What is the Budget?:</label>
+                    <input asp-for="Budget" class="form-control" />
+                </div>
 
-        <div class="mb-3">
-            <label asp-for="WhichCampaign" class="form-label"> Which Campaign Are You A Part Of?:</label>
-            <input asp-for="WhichCampaign" class="form-control" />
-        </div>
+                <div>
+                    <label asp-for="ReasonForTravel" class="form-label"> Reason For Travel?:</label>
+                    <input asp-for="ReasonForTravel" class="form-control" />
+                </div>
 
-        <div class="mb-3">
-            <label asp-for="ApprovedByWho" class="form-label"> Who Has Approved This?</label>
-            @(Html.Kendo().AutoComplete()
-                .Name("ApprovedNames")
-                .Filter("startswith")
-                .Placeholder("Who?")
-                .Size(ComponentSize.Medium)
-                .Rounded(Rounded.Medium)
-                .FillMode(FillMode.Outline)
-                .Filter("startswith")
-                .BindTo(new string[] {
-            "TEST NAME1",
-            "Name Test 2",
-            "TestName3",
-                })
-                .Separator(", ")
-                .HtmlAttributes(new { style = "width: 100%;" })
-                )
-        </div>
+                <div>
+                    <label asp-for="WhichCampaign" class="form-label" required> Which Campaign Are You A Part Of?:</label>
+                    <input asp-for="WhichCampaign" class="form-control" />
+                </div>
 
-        <div>
-            <label asp-for="RentalCar" class="form-label"> Is A Rental Car Needed?:</label>
-            <select asp-for="RentalCar" class="form-control" required>
-                <option value="" disabled selected>Select an option</option>
-                <option value="Yes">Yes</option>
-                <option value="No">No</option>
-            </select>
-        </div>
-        <button type="submit" class="btn btn-primary">Submit</button>
+                <div>
+                    <label asp-for="ApprovedByWho" class="form-label" required> Who Has Approved This? </label>
+                    @(Html.Kendo().AutoComplete()
+                        .Name("ApprovedNames")
+                        .Filter("startswith")
+                        //.Placeholder("Who?")
+                        .Size(ComponentSize.Medium)
+                        .Rounded(Rounded.Medium)
+                        .FillMode(FillMode.Outline)
+                        .Filter("startswith")
+                        .BindTo(new string[] {
+                            "TEST NAME1",
+                            "Name Test 2",
+                            "TestName3",
+                        })
+                        .Separator(", ")
+                        .HtmlAttributes(new { style = "width: 100%;" })
+                        )
+                </div>
+
+                <div>
+                    <label asp-for="RentalCar" class="form-label"> Is A Rental Car Needed?:</label>
+                    <select asp-for="RentalCar" class="form-control">
+                        <option value="" disabled selected>Select an option</option>
+                        <option value="Yes">Yes</option>
+                        <option value="No">No</option>
+                    </select>
+                </div>
+                <button type="submit" class="btn btn-primary">Submit</button>
+            </section>
+         </div> 
+        
+   
     </form>
-</div>
+</body>
 
 <script>
+
+    var numOfNEI = 0;
+    var addedNodes = [];
+    
+    
+
     $(document).ready(function () {
 
         // create kendoDropDownTree from input HTML element
@@ -189,6 +206,7 @@
 
     });
 
+    // Makes it so the check-out calander won't be a date before check-in
     document.getElementById('checkInDate').addEventListener('change', function () {
         document.getElementById('checkOutDate').min = this.value;
     });
@@ -206,16 +224,69 @@
         document.getElementById('numberOfNights').value = diffDays || '';
     }
 
+
     document.getElementById('checkInDate').addEventListener('change', calculateNights);
     document.getElementById('checkOutDate').addEventListener('change', calculateNights);
 
-    document.getElementById('travellingWithOthers').addEventListener('change', function () {
-        var travellingWithWhoSection = document.getElementById('travellingWithWhoSection');
-        travellingWithWhoSection.style.display = this.value === 'Yes' ? 'block' : 'none';
-
-        if (this.value !== 'Yes') {
-            document.getElementById('TravellingWithWho').value = '';
+    //Checks when "How many people are traveling" is changed and call functions to make a NEI block for them
+    document.getElementById('quantity').addEventListener('change', function () {
+        document.getElementById('RestOfForm').style.display = 'block';
+        let newValue = document.getElementById("quantity").value;
+        console.log(newValue)
+        if (newValue > numOfNEI) {
+            repeatElements(newValue);
+            
+        } else if (newValue < numOfNEI) {
+            removeElement(newValue);
         }
+            
+
+       
     });
 
+    function repeatElements(num) {
+        let template = document.getElementById('ENI_Template')
+        let diff = num - numOfNEI;
+        if (template) {
+            for (let i = 0; i < diff; i++) { 
+                // Get the parent container to append the repeated elements
+                let parentContainer = document.getElementById('ENI_Location');
+
+                // Clone the template and append it to the parent container
+                document.getElementById('EmployeeNum').innerHTML = 'Employee #' + (numOfNEI + 1);
+                let clonedElement = template.cloneNode(true);
+                clonedElement.style.display = ''; // Show the cloned element
+                parentContainer.appendChild(clonedElement);
+                addedNodes.push(clonedElement)
+                numOfNEI++;
+            }
+          
+        } else {
+            console.error("Template element not found.");
+
+        }
+    }
+
+    function removeElement(num) {
+        let parentContainer = document.getElementById('ENI_Location');
+        var diff = numOfNEI - num;
+        for (let i = 0; i < diff; i++) {
+
+            parentContainer.removeChild(addedNodes.pop());
+            numOfNEI--;
+        }
+        
+    }
+
+
+    //prevents a user from pressing 'enter' to submit form, prevents accidental form submissions 
+    // document.getElementById('myForm').addEventListener('keypress', function (e) {
+    //     var key = e.which || e.keyCode;
+    //     if (key === 13) {
+    //         e.preventDefault();
+    //     }
+    // });
+
 </script>
+
+
